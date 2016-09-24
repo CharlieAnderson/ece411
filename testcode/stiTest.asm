@@ -1,0 +1,11 @@
+ORIGIN 0
+SEGMENT
+
+	ADD R4, R0, 2
+
+	STI R4, R0, 2
+
+
+SEGMENT        
+DataSegment:
+ZERO:	 DATA2 0

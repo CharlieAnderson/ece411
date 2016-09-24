@@ -1,0 +1,13 @@
+ORIGIN 0
+SEGMENT
+
+	ADD R1, R0, 23
+
+	LSHF R2, R1, 4
+	RSHFL R3, R2, 2
+	RSHFA R4, R3, 2
+
+
+SEGMENT        
+DataSegment:
+ZERO:	 DATA2 0

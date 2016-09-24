@@ -1,0 +1,11 @@
+ORIGIN 0
+SEGMENT
+
+	ADD R1, R0, 6
+	TRAP x21
+
+
+
+SEGMENT        
+DataSegment:
+ZERO:	 DATA2 0
