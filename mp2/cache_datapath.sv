@@ -1,15 +1,23 @@
 module cache_datapath (
 
 	input clk,
-	input dirty1,
-	input dirty2,
+	input dirty1, dirty2,
+	input valid1, valid2,
 	input lru_in,
-	input mem_address,
+	input [15:0]mem_address,
+	input load_dirty1, load_dirty2,
+	input load_tag1, load_tag2,
+	input load_valid1, load_valid2,
+	input load_data1, load_data2,
+	input load_lru,
+	input datain1_sel, datain2_sel,
+
 
 
 	output hit1, hit2,
 	output hit_flag, dirty_flag,
-	output lru_out,
+	output [2:0]lru_out,
+	output [127:0] data_out,
 
 
 );
@@ -17,143 +25,171 @@ module cache_datapath (
 
 logic valid1_out, valid2_out;
 logic dirty1_out, dirty2_out;
-logic data1_out, data2_out;
+logic [127:0]data1_out, [127:0]data2_out;
 logic tag1_out, tag2_out;
-logic tag;
-logic index;
-logic offset;
+logic comp1_out, comp2_out;
+logic hit1_out, hit2_out;
+logic dirty_bit1_out, dirty_bit2_out;
+logic [8:0]tag;
+logic [2:0]index;
+logic [3:0]offset;
 
 
 
 
-array dirty1 (
+array #(.width(1)) dirty1 (
 	.clk(clk),
-	.write(),
-	.index(),
-	.datain(),
-	.dataout()
+	.write(load_dirty1),
+	.index(index),
+	.datain(dirty1),
+	.dataout(dirty1_out)
 );
 
-array dirty2 (
+array #(.width(1)) dirty2 (
 	.clk(clk),
-	.write(),
-	.index(),
-	.datain(),
-	.dataout()
+	.write(load_dirty2),
+	.index(index),
+	.datain(dirty2),
+	.dataout(dirty2_out)
 );
 
-array valid1 (
+array #(.width(1)) valid1 (	// should be set to invalid by default?
 	.clk(clk),
-	.write(),
-	.index(),
-	.datain(),
-	.dataout()
+	.write(load_valid1),
+	.index(index),
+	.datain(valid1),
+	.dataout(valid1_out)
 );
 
-array valid2 (
+array #(.width(1)) valid2 (
 	.clk(clk),
-	.write(),
-	.index(),
-	.datain(),
-	.dataout()
+	.write(load_valid2),
+	.index(index),
+	.datain(valid2),
+	.dataout(valid2_out)
 );
 
-array tag1 (
+array #(.width(9)) tag1 (
 	.clk(clk),
-	.write(),
-	.index(),
-	.datain(),
-	.dataout()
+	.write(load_tag1),
+	.index(index),
+	.datain(tag),
+	.dataout(tag1_out)
 );
 
-array tag2 (
+array #(.width(9)) tag2 (
 	.clk(clk),
-	.write(),
-	.index(),
-	.datain(),
-	.dataout()
+	.write(load_tag2),
+	.index(index),
+	.datain(tag),
+	.dataout(tag2_out)
 );
 
-array data1 (
+array #(.width(128)) data1 (
 	.clk(clk),
-	.write(),
-	.index(),
+	.write(load_data1),
+	.index(index),
 	.datain(),
-	.dataout()
+	.dataout(data1_out)
 );
 
-array data2 (
+array #(.width(128)) data2 (
 	.clk(clk),
-	.write(),
-	.index(),
+	.write(load_data2),
+	.index(index),
 	.datain(),
-	.dataout()
+	.dataout(data2_out)
 );
 
-array LRU (
+array #(.width(3)) lru (
 	.clk(clk),
-	.write(),
-	.index(),
+	.write(load_lru),
+	.index(index),
 	.datain(lru_in),
 	.dataout(lru_out)
 );
 
 
 and_gate hit1 (
-	.a(),
-	.b(),
-	.out()
+	.a(valid1_out),
+	.b(comp1_out),
+	.out(hit1_out)
 );
 
 and_gate hit2 (
-	.a(),
-	.b(),
-	.out()
+	.a(valid2_out),
+	.b(comp2_out),
+	.out(hit2_out)
 );
 
 and_gate dirty_bit1 (
-	.a(),
-	.b(),
-	.out()
+	.a(dirty1_out),
+	.b(hit1_out),
+	.out(dirty_bit1_out)
 );
 
 and_gate dirty_bit2 (
-	.a(),
-	.b(),
-	.out()
+	.a(dirty2_out),
+	.b(hit2_out),
+	.out(dirty_bit2_out)
 );
 
 or_gate hit_gate (
-	.a(),
-	.b(),
-	.out()
+	.a(hit1_out),
+	.b(hit2_out),
+	.out(hit_flag)
 );
 
 or_gate dirty_gate (
-	.a(),
-	.b(),
-	.out()
+	.a(dirty_bit1_out),
+	.b(dirty_bit2_out),
+	.out(dirty_flag)
 );
 
+comparator #(.width(9)) comp1 (
+	.a(tag),
+	.b(tag1_out),
+	.out(comp1_out)
+);
+
+comparator #(.width(9)) comp2 (
+	.a(tag),
+	.b(tag2_out),
+	.out(comp2_out)
+);
+
+mux2 datain_mux1 (
+	.sel(datain1_sel),	//add another mux for the selections?
+	.a(data1_out),
+	.b(data2_out),
+	.f(data_out)
+);
+
+mux2 datain_mux2 (
+	.sel(datain2_sel),	//add another mux for the selections?
+	.a(data1_out),
+	.b(data2_out),
+	.f(data_out)
+);
 
 mux2 data_out_mux (
-	.sel(),
-	.a(),
-	.b(),
-	.f()
+	.sel(),	//add another mux for the selections?
+	.a(data1_out),
+	.b(data2_out),
+	.f(data_out)
 );
 
 mux8 word_mux (
-	.sel(),
-	.a(),
-	.b(),
-	.c(),
-	.d(),
-	.e(),
-	.f(),
-	.g(),
-	.h(),
-	.out()
+	.sel(lru_out),
+	.a(data_out[15:0]),
+	.b(data_out[31:16]),
+	.c(data_out[47:32]),
+	.d(data_out[63:48]),
+	.e(data_out[79:64]),
+	.f(data_out[95:80]),
+	.g(data_out[111:96]),
+	.h(data_out[127:112]),
+	.out(word_out)
 );
 
 addr_decoder addr_decode (

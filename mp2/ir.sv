@@ -2,21 +2,21 @@ import lc3b_types::*;
 
 module ir
 (
-    input clk,
-    input load,
-    input lc3b_word in,
-    output lc3b_opcode opcode,
-    output lc3b_reg dest, src1, src2,
-    output lc3b_offset6 offset6,
-    output lc3b_offset9 offset9,
-	 output lc3b_offset11 offset11,
-	 output lc3b_imm5 imm5,
-	 output logic imm5_enable,
-	 output logic A_bit,
-	 output logic D_bit,
-    output lc3b_imm4 imm4,
-	 output logic jsrr_enable,
-	 output lc3b_byte trapvector
+        input clk,
+        input load,
+        input lc3b_word in,
+        output lc3b_opcode opcode,
+        output lc3b_reg dest, src1, src2,
+        output lc3b_offset6 offset6,
+        output lc3b_offset9 offset9,
+        output lc3b_offset11 offset11,
+        output lc3b_imm5 imm5,
+        output logic imm5_enable,
+        output logic A_bit,
+        output logic D_bit,
+        output lc3b_imm4 imm4,
+        output logic jsrr_enable,
+        output lc3b_byte trapvector
 );
 
 lc3b_word data;

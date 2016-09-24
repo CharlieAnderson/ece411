@@ -1,17 +1,23 @@
 module cache_control (
-input mem_read,
-input mem_write,
-input mem_resp,
-input pmem_resp,
-input pmem_read,
-input pmem_write,
-input lru_out,
-input hit1, hit2,
-input hit_flag,
-input dirty_flag,
+	input mem_read,
+	input mem_write,
+	input mem_resp,
+	input pmem_resp,
+	input pmem_read,
+	input pmem_write,
+	input lru_out,
+	input hit1, hit2,
+	input hit_flag,
+	input dirty_flag,
 
-output dirty1, dirty2,
-output lru_in
+	output dirty1, dirty2,
+	output lru_in,
+	output load_dirty1, load_dirty2,
+	output load_tag1, load_tag2,
+	output load_valid1, load_valid2,
+	output load_data1, load_data2,
+	output load_lru
+
 );
 
 enum int unsigned {
