@@ -11,16 +11,27 @@ module cache_datapath (
 	input load_data1, load_data2,
 	input load_lru,
 	input datain1_sel, datain2_sel,
+	input [127:0]pmem_rdata,
+	input [15:0]mem_wdata,
 
-
-
-	output hit1, hit2,
-	output hit_flag, dirty_flag,
-	output [2:0]lru_out,
-	output [127:0] data_out,
-
+	output logic hit1, hit2,
+	output logic hit_flag, dirty_flag,
+	output logic lru_out,
+	output logic [127:0] data_out,
+	output logic [127:0] pmem_wdata,
+	output logic [15:0] mem_rdata
 
 );
+
+/*
+TODO:
+	-use mem_byte enable to determine where/what to write to memory, don't think we need it for the cp read
+	-make sure we correctly select the data going into the data arrays,
+	-need to somehow use which way is hit to decide which data goes to mem something data or something
+	- 
+
+
+*/
 
 
 logic valid1_out, valid2_out;
@@ -34,8 +45,8 @@ logic [8:0]tag;
 logic [2:0]index;
 logic [3:0]offset;
 
-
-
+assign pmem_wdata = data_out;
+assign mem_rdata = word_out;	//may be decided by which way is hit 
 
 array #(.width(1)) dirty1 (
 	.clk(clk),
@@ -101,7 +112,7 @@ array #(.width(128)) data2 (
 	.dataout(data2_out)
 );
 
-array #(.width(3)) lru (
+array #(.width(1)) lru (
 	.clk(clk),
 	.write(load_lru),
 	.index(index),
@@ -160,27 +171,27 @@ comparator #(.width(9)) comp2 (
 
 mux2 datain_mux1 (
 	.sel(datain1_sel),	//add another mux for the selections?
-	.a(data1_out),
-	.b(data2_out),
+	.a(data1_out),//??????????
+	.b(pmem_rdata),
 	.f(data_out)
 );
 
 mux2 datain_mux2 (
 	.sel(datain2_sel),	//add another mux for the selections?
-	.a(data1_out),
-	.b(data2_out),
+	.a(data2_out),
+	.b(pmem_rdata),
 	.f(data_out)
 );
 
 mux2 data_out_mux (
-	.sel(),	//add another mux for the selections?
+	.sel(lru_out),	//add another mux for the selections?
 	.a(data1_out),
 	.b(data2_out),
-	.f(data_out)
+	.f(data_out) //might only be for pmemwdata
 );
 
 mux8 word_mux (
-	.sel(lru_out),
+	.sel(offset[3:1]),	// only need 2 bits, lsb is always 0??????? offset is used for the indices within the selected index line!?
 	.a(data_out[15:0]),
 	.b(data_out[31:16]),
 	.c(data_out[47:32]),
