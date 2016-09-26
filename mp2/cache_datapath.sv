@@ -234,7 +234,7 @@ mux8 word_mux (
 );
 
 mux8 data1_word_mux (
-	.sel(offset[3:1]),	
+	.sel(offset[3:1]),
 	.a(data1_out[15:0]),
 	.b(data1_out[31:16]),
 	.c(data1_out[47:32]),
@@ -272,7 +272,7 @@ mux4 #(.width(1))data_way_mux (	// select the 128 bits of data from the way that
 	.sel({hit2_out, hit1_out}),
 	.a(1'b0),
 	.b(1'b0), //way 1
-	.c(1'b1), //way2
+	.c(1'b1), //way2da
 	.d(1'b0),
 	.f(data_out_sel)
 

@@ -59,7 +59,7 @@ case(state)
 
 	idle: 
 	begin
-		if(hit1_out == 1 || hit2_out == 1)
+		if(hit_flag == 1)
 		begin
 			if(mem_read == 1) 
 			begin
@@ -132,7 +132,7 @@ begin: next_state_logic
 case(state)
 
 	idle: begin
-		if(hit1_out==0 && hit2_out==0)
+		if(hit_flag == 0)
 		begin
 	/*		if(dirty_flag == 0 && hit_flag == 0)	// else we can read if there is a miss (no hits) and no set dirty bits
 				next_state = read_pmem;
