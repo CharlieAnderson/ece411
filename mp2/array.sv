@@ -4,7 +4,7 @@ module array #(parameter width = 128)
 (
     input clk,
     input write,
-    input lc3b_c_index index,
+    input [2:0] index,
     input [width-1:0] datain,
     output logic [width-1:0] dataout
 );

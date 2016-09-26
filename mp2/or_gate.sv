@@ -1,10 +1,12 @@
+import lc3b_types::*;
+
 module or_gate (
-input a,b,
-output logic out
+	input a,b,
+	output logic out
 );
 
 always_comb 
-begin: 
+begin 
 	if(a==1 || b==1)
 		out = 1;
 	else
